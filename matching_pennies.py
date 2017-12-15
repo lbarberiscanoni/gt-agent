@@ -47,16 +47,16 @@ class Player:
         Hare   (0,0)   (2,3)
         """
         reward = [0,0]
-        # F - Stag, M - Stag
+        # Match
         if state == [0,0]:
             reward = [1, -1]
-        # F - Stag, M - Hare
+        # Different
         elif state == [0,1]:
             reward = [-1, 1]
-        # F - Hare, M - Stag
+        # Different
         elif state == [1,0]:
             reward = [-1, 1]
-        # F - Hare, M - Hare
+        # Match
         elif state == [1,1]:
             reward = [1, -1]
         if sex == "female":
@@ -71,7 +71,7 @@ class Player:
         """We use 1 to represent Hare,
         and we use 0 to represent Stag"""
         return [
-            "Hare" if n == 1 else "Stag" for n in state
+            "Head" if n == 1 else "Tail" for n in state
         ]
 
     def get_action(self, state):
@@ -165,7 +165,7 @@ def print_outcomes(outcomes):
 
 if __name__=="__main__":
     # Create two players, and train them
-    female_player, male_player = train_players(iterations=1000)
+    female_player, male_player = train_players(iterations=100000)
     # Now test the players.
     outcomes = test_players(female_player, male_player, iterations=100)
     # Print the outcomes in a nice way.
