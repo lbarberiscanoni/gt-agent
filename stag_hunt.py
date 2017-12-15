@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import division
 
-from tensorforce.agents import TRPOAgent
+from tensorforce.agents import TRPOAgent, DDQNAgent
 import unittest
 import numpy as np
 
@@ -23,7 +23,7 @@ class Player:
     """
     def __init__(self):
         # Create a Trust Region Policy Optimization agent
-        self.agent = TRPOAgent(
+        self.agent = DDQNAgent(
             states_spec={'shape': (2,), 'type': 'float'},
             actions_spec={'type': 'int', 'num_actions': 2},
             network_spec=[{'type': 'dense', 'size': 50}, {'type': 'dense', 'size': 50}],
@@ -96,22 +96,22 @@ def train_players(iterations=10):
     normal_player = Player()
 
     # Play them against each other.
-    for i in range(iterations):
-        # First get the actions for both players.
-        action_a = female_player.get_action(Player.get_initial_state())
-        action_b = male_player.get_action(Player.get_initial_state())
-        action_c = normal_player.get_action(Player.get_initial_state())
-        # Now get the reward for each player.
-        female_player_reward = Player.get_reward([ action_a, 1 ], sex='female')
-        male_player_reward = Player.get_reward([ action_c, action_b ], sex='male')
-        normal_player_reward = Player.get_reward([ action_c, action_b ], sex='female')
-        # Update the policy of each player given the reward,
-        # notice how the update function only depends on the
-        # reward and nothing else, in this particular
-        # implementation.
-        female_player.update(female_player_reward)
-        male_player.update(male_player_reward)
-        normal_player.update(normal_player_reward)
+    # for i in range(iterations):
+    #     # First get the actions for both players.
+    #     action_a = female_player.get_action(Player.get_initial_state())
+    #     action_b = male_player.get_action(Player.get_initial_state())
+    #     action_c = normal_player.get_action(Player.get_initial_state())
+    #     # Now get the reward for each player.
+    #     female_player_reward = Player.get_reward([ action_a, 1 ], sex='female')
+    #     male_player_reward = Player.get_reward([ action_c, action_b ], sex='male')
+    #     normal_player_reward = Player.get_reward([ action_c, action_b ], sex='female')
+    #     # Update the policy of each player given the reward,
+    #     # notice how the update function only depends on the
+    #     # reward and nothing else, in this particular
+    #     # implementation.
+    #     female_player.update(female_player_reward)
+    #     male_player.update(male_player_reward)
+    #     normal_player.update(normal_player_reward)
 
     # Play them against each other.
     for i in range(iterations):
@@ -165,7 +165,7 @@ def print_outcomes(outcomes):
 
 if __name__=="__main__":
     # Create two players, and train them
-    female_player, male_player = train_players(iterations=10000)
+    female_player, male_player = train_players(iterations=100000)
     # Now test the players.
     outcomes = test_players(female_player, male_player, iterations=100)
     # Print the outcomes in a nice way.
