@@ -8,22 +8,21 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--population", help="int of how many agents you want to test")
+parser.add_argument("--resources", help="int of how many agents you want to test")
 parser.add_argument("--agent", nargs='+', help="select agent type [ppo, dqn, vpg] ")
 parser.add_argument("--ceiling", help="upper threshold for the bar")
 parser.add_argument("--floor", help="lower threshold for the bar")
 
 args = parser.parse_args()
 
-numberOfPlayers = 10
-
 #training phase
 
-Market = ClearingHouse(int(args.population), 4, float(args.ceiling), float(args.floor))
+Market = ClearingHouse(int(args.population), int(args.resources), float(args.ceiling), float(args.floor))
 
 initialState = Market.get_state()
 
 agent = TRPOAgent(
-    states={"type":'float', "shape": (int(args.population), 1, 4,)},
+    states={"type":'float', "shape": (int(args.population), 1, int(args.resources),)},
     actions={"type":'int', "shape": (Market.numOfResources,), "num_values":3},
     network="auto",
     memory=10000,
@@ -32,9 +31,10 @@ agent = TRPOAgent(
 agent.initialize()
 
 
-playerList = [agent for i in range(numberOfPlayers)]
+playerList = [agent for i in range(int(args.population))]
 
 training_size = 1000000
+# training_size = 10
 for i in tqdm(range(training_size)):
 
     state = Market.get_state()
@@ -57,9 +57,11 @@ for i in tqdm(range(training_size)):
         x += 1
 
 # #playing phase 
-Market = ClearingHouse(numberOfPlayers, 4, .7, .3)
+Market = ClearingHouse(int(args.population), int(args.resources), float(args.ceiling), float(args.floor))
+
 
 play_size = 100000
+# play_size = 10
 for i in tqdm(range(play_size)):
 
     state = Market.get_state()
@@ -84,6 +86,7 @@ for i in tqdm(range(play_size)):
 
 print(Market.score)
 
-f = open("market.pkl", "wb") 
+f = open("market_pop" + args.population + "_res" + args.resources + "_" + "-".join(args.agent) + ".pkl", "wb") 
+
 pickle.dump(Market.market, f)
 
