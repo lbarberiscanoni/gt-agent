@@ -1,10 +1,11 @@
-from tensorforce.agents import TRPOAgent
+from tensorforce.agents import TRPOAgent, VPGAgent, DQNAgent
 # import tensorflow as tf
 import numpy as np
 from arena import ClearingHouse
 import pickle
 from tqdm import tqdm
 import argparse
+import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--population", help="int of how many agents you want to test")
@@ -19,22 +20,48 @@ args = parser.parse_args()
 
 Market = ClearingHouse(int(args.population), int(args.resources), float(args.ceiling), float(args.floor))
 
-initialState = Market.get_state()
+def get_agent(agentType): 
 
-agent = TRPOAgent(
-    states={"type":'float', "shape": (int(args.population), 1, int(args.resources),)},
-    actions={"type":'int', "shape": (Market.numOfResources,), "num_values":3},
-    network="auto",
-    memory=10000,
-)
+    if agentType == "dqn":
+        agent = DQNAgent(
+            states={"type":'float', "shape": (int(args.population), 1, int(args.resources),)},
+            actions={"type":'int', "shape": (int(args.resources),), "num_values":3},
+            memory=100,
+            network="auto",
+        )
+    elif agentType == "vpg":
+        agent = VPGAgent(
+            states={"type":'float', "shape": (int(args.population), 1, int(args.resources),)},
+            actions={"type":'int', "shape": (int(args.resources),), "num_values":3},
+            network="auto",
+            memory=100,
+        )
+    elif agentType == "trpo":
+        agent = TRPOAgent(
+            states={"type":'float', "shape": (int(args.population), 1, int(args.resources),)},
+            actions={"type":'int', "shape": (int(args.resources),), "num_values":3},
+            network="auto",
+            memory=10000,
+        )
 
-agent.initialize()
+    return agent
 
+playerList = []
 
-playerList = [agent for i in range(int(args.population))]
+for agentType in args.agent:
+    agent_batch = int(12 / len(args.agent))
+    for i in range(agent_batch):
+        agent = get_agent(agentType)
+        agent.initialize()
+        print("agent", i, "ready")
+        playerList.append(agent)
 
-training_size = 1000000
-# training_size = 10
+print(playerList)
+
+ 
+
+# training_size = 1000000
+training_size = 10
 for i in tqdm(range(training_size)):
 
     state = Market.get_state()
@@ -60,8 +87,8 @@ for i in tqdm(range(training_size)):
 Market = ClearingHouse(int(args.population), int(args.resources), float(args.ceiling), float(args.floor))
 
 
-play_size = 100000
-# play_size = 10
+# play_size = 100000
+play_size = 10
 for i in tqdm(range(play_size)):
 
     state = Market.get_state()

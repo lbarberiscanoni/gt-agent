@@ -2,7 +2,7 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 
-f = open("market.pkl", "rb")
+f = open("market_pop12_res4_trpo-vpg.pkl", "rb")
 
 txt = pickle.load(f)
 
