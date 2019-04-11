@@ -1,8 +1,12 @@
 import subprocess
 import itertools
 
+# combos = [
+# 	"trpo", "vpg", "dqn", "trpo vpg", "vpg dqn", "dqn", "trpo", "trpo vpg dqn"
+# ]
+
 combos = [
-	"trpo", "vpg", "dqn", "trpo vpg", "vpg dqn", "dqn", "trpo", "trpo vpg dqn"
+	"vpg", "dqn", "trpo vpg", "vpg dqn", "dqn", "trpo", "trpo vpg dqn"
 ]
 
 resources = [1, 5, 10]

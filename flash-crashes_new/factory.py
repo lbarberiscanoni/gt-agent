@@ -26,7 +26,7 @@ def get_agent(agentType):
         agent = DQNAgent(
             states={"type":'float', "shape": (int(args.population), 1, int(args.resources),)},
             actions={"type":'int', "shape": (int(args.resources),), "num_values":3},
-            memory=100,
+            memory=1000,
             network="auto",
         )
     elif agentType == "vpg":
@@ -34,14 +34,14 @@ def get_agent(agentType):
             states={"type":'float', "shape": (int(args.population), 1, int(args.resources),)},
             actions={"type":'int', "shape": (int(args.resources),), "num_values":3},
             network="auto",
-            memory=100,
+            memory=1000,
         )
     elif agentType == "trpo":
         agent = TRPOAgent(
             states={"type":'float', "shape": (int(args.population), 1, int(args.resources),)},
             actions={"type":'int', "shape": (int(args.resources),), "num_values":3},
             network="auto",
-            memory=10000,
+            memory=1000,
         )
 
     return agent
@@ -60,8 +60,8 @@ print(playerList)
 
  
 
-# training_size = 1000000
-training_size = 10
+training_size = 100000
+# training_size = 10
 for i in tqdm(range(training_size)):
 
     state = Market.get_state()
@@ -87,8 +87,8 @@ for i in tqdm(range(training_size)):
 Market = ClearingHouse(int(args.population), int(args.resources), float(args.ceiling), float(args.floor))
 
 
-# play_size = 100000
-play_size = 10
+play_size = 100000
+# play_size = 10
 for i in tqdm(range(play_size)):
 
     state = Market.get_state()
