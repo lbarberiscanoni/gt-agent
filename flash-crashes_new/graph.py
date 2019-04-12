@@ -1,68 +1,104 @@
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
+import os
+import math
 
-f = open("market_pop12_res4_trpo-vpg.pkl", "rb")
+fileList = [x for x in os.listdir() if ".pkl" in x]
 
-txt = pickle.load(f)
+def breakdown():
 
-# for i in range(len(txt)):
+	for file_name in fileList:
 
-# 	data = txt[i]["long"]
-# 	data2 = txt[i]["short"]
+		f = open(file_name, "rb")
 
-# 	#center = (bins[:-1] + bins[1:]) / 2
-# 	#plt.bar(center, hist, align='center', width=width)
-# 	# plt.hist(data, 5, facecolor='blue', align="mid")
-# 	# plt.show()
+		txt = pickle.load(f)
 
-# 	bubbles = []
-# 	correction = []
-# 	growth = []
+		overallBubbles = []
+		overallCorrections = []
+		overallGrowth = []
 
-# 	for x in data:
-# 		if x >= .7:
-# 			bubbles.append(x)
-# 		elif x <= .3:
-# 			correction.append(x)
-# 		else:
-# 			growth.append(x)
+		for i in range(len(txt)):
 
-# 	print(i + 1)
-# 	print("bubbles %", len(bubbles) / float(len(data)))
-# 	print("correction %", len(correction) / float(len(data)))
-# 	print("growth %", len(growth) / float(len(data)))
-# 	print("median:", np.median(data))
-# 	print("std:", np.std(data))
-# 	print("corr:", np.corrcoef(data, data2)[1, 0])
-# 	print("------------")
+			data = txt[i]["long"]
+			data2 = txt[i]["short"]
 
-# 	#plotting the values
-# 	x = [i for i in range(len(data))]
-# 	plt.scatter(data, data2)
-# 	plt.savefig("resource" + str(i + 1) + ".png")
+			bubbles = []
+			correction = []
+			growth = []
 
-for i in range(len(txt)):
+			for x in data:
+				if x >= .7:
+					bubbles.append(x)
+				elif x <= .3:
+					correction.append(x)
+				else:
+					growth.append(x)
 
-	longData = txt[i]["long"]
-	shortData = txt[i]["short"]
+		# 	# print(i + 1)
+		# 	# print("bubbles %", len(bubbles) * 100 / float(len(data)))
+		# 	# print("correction %", len(correction) * 100  / float(len(data)))
+		# 	# print("growth %", len(growth) * 100 / float(len(data)))
+		# 	# print("median:", np.median(data) * 100 )
+		# 	# print("std:", np.std(data) * 100)
+		# 	# print("corr:", np.corrcoef(data, data2)[1, 0])
+		# 	# print("------------")
 
-	shortInterest = []
-	x = []
-	y = []
-	for j in range(len(longData)):
-		if longData[j] < .3:
-			_ = shortData[j] / float(1 - longData[j])
-			shortInterest.append(_)
+			overallBubbles.append(len(bubbles) * 100 / float(len(data)))
+			overallCorrections.append(len(correction) * 100  / float(len(data)))
+			overallGrowth.append(len(growth) * 100 / float(len(data)))
 
-			x.append(longData[j])
-			y.append(shortData[j])
 
-	print("resource", i + 1)
-	print("median", np.median(shortInterest))
-	print("mean", np.mean(shortInterest))
-	print("std", np.std(shortInterest))
-	print("corr", np.corrcoef(x, y)[1, 0])
-	print("---------")
+		print(file_name)
+		print("bubbles", np.mean(overallBubbles))
+		print("growth", np.mean(overallGrowth))
+		print("corrections", np.mean(overallCorrections))
+		print("---------------------")
+
+
+def participation():
+
+	for file_name in fileList:
+
+		f = open(file_name, "rb")
+
+		txt = pickle.load(f)
+
+		overallShortInterest = []
+	
+		for i in range(len(txt)):
+
+			longData = txt[i]["long"]
+			shortData = txt[i]["short"]
+
+			shortInterest = []
+			x = []
+			y = []
+			for j in range(len(longData)):
+				if longData[j] < .3:
+					_ = shortData[j] / float(1 - longData[j])
+					shortInterest.append(_)
+
+					x.append(longData[j])
+					y.append(shortData[j])
+
+			overallShortInterest.append(np.median(shortInterest) * 100)
+
+		overallShortInterest_clean = [x for x in overallShortInterest if math.isnan(x) == False ]
+		print(overallShortInterest_clean)
+
+		print(file_name)
+
+		if len(overallShortInterest_clean) > 0:
+			print("median", np.median(overallShortInterest_clean))
+			print("mean", np.mean(overallShortInterest_clean))
+			print("std", np.std(overallShortInterest_clean))
+		else:
+			print("median", 0.0)
+			print("mean", 0.0)
+			print("std", 0.0)
+		print("---------")
+
+participation()
 
 

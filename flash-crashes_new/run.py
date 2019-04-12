@@ -6,7 +6,7 @@ import itertools
 # ]
 
 combos = [
-	"vpg", "dqn", "trpo vpg", "vpg dqn", "dqn", "trpo", "trpo vpg dqn"
+	"trpo dqn"
 ]
 
 resources = [1, 5, 10]
